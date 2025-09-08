@@ -1,17 +1,33 @@
 import { useState } from "react";
-import { Home, Users, User, FileText, BarChart2, Settings } from "lucide-react";
+import {
+  Home,
+  Users,
+  User,
+  FileText,
+  BarChart2,
+  Settings,
+  UserCircle,
+} from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function AdminSidebar() {
   const [open, setOpen] = useState(false);
-  const currentPath = window.location.pathname; // path aktif
+  const location = useLocation();
+
+  // Tutup sidebar otomatis setelah pilih menu (khusus mobile)
+  const handleClose = () => {
+    if (window.innerWidth < 640) {
+      setOpen(false);
+    }
+  };
 
   return (
     <div className="flex">
-      {/* Toggle Button */}
+      {/* Toggle Button (Mobile) */}
       <button
         onClick={() => setOpen(!open)}
         type="button"
-        className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden 
+        className="fixed top-3 left-3 z-50 inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden 
         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
       >
         <span className="sr-only">Open sidebar</span>
@@ -46,104 +62,120 @@ export default function AdminSidebar() {
           {/* Menu List */}
           <ul className="space-y-2 text-sm font-medium">
             <li>
-              <a
-                href="/AdminBeranda"
+              <NavLink
+                to="/AdminBeranda"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminBeranda"
+                  location.pathname === "/AdminBeranda"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Home className="w-5 h-5 mr-3" />
                 Beranda
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminPelamar"
+              <NavLink
+                to="/AdminPelamar"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminPelamar"
+                  location.pathname === "/AdminPelamar"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Users className="w-5 h-5 mr-3" />
                 Pelamar
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminUser"
+              <NavLink
+                to="/AdminUser"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminUser" ? "bg-blue-700" : "hover:bg-blue-700"
+                  location.pathname === "/AdminUser"
+                    ? "bg-blue-700"
+                    : "hover:bg-blue-700"
                 }`}
               >
                 <User className="w-5 h-5 mr-3" />
                 User
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminPembimbing"
+              <NavLink
+                to="/AdminPembimbing"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminPembimbing"
+                  location.pathname === "/AdminPembimbing"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <User className="w-5 h-5 mr-3" />
                 Pembimbing
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminSertifikat"
+              <NavLink
+                to="/AdminSertifikat"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminSertifikat"
+                  location.pathname === "/AdminSertifikat"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <FileText className="w-5 h-5 mr-3" />
                 Sertifikat
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminLaporan"
+              <NavLink
+                to="/AdminLaporan"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminLAporan"
+                  location.pathname === "/AdminLaporan"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <BarChart2 className="w-5 h-5 mr-3" />
                 Laporan dan Riwayat
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/AdminKelola"
+              <NavLink
+                to="/AdminKelola"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/AdminKelola"
+                  location.pathname === "/AdminKelola"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Settings className="w-5 h-5 mr-3" />
                 Kelola Akun
-              </a>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/AdminProfil"
+                onClick={handleClose}
+                className={`flex items-center p-2 rounded-lg ${
+                  location.pathname === "/AdminProfil"
+                    ? "bg-blue-700"
+                    : "hover:bg-blue-700"
+                }`}
+              >
+                <UserCircle className="w-5 h-5 mr-3" />
+                Profil
+              </NavLink>
             </li>
           </ul>
         </div>
       </aside>
-
-      {/* Main Content */}
-      {/* <div className="p-4 sm:ml-64 w-full">
-        <div className="p-4 border-2 border-gray-200 border-dashed rounded-lg">
-          <h1 className="text-xl font-bold text-gray-700">Halaman Konten</h1>
-        </div>
-      </div> */}
     </div>
   );
 }

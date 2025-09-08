@@ -24,6 +24,15 @@ import PembimbingNilai from "./pages/pembimbing/PembimbingNilai";
 import PembimbingProyek from "./pages/pembimbing/PembimbingProyek";
 import PembimbingRiwayat from "./pages/pembimbing/PembimbingRiwayat";
 import PembimbingUser from "./pages/pembimbing/PembimbingUser";
+import UserAbsensi from "./pages/user/UserAbsensi";
+import UserKalender from "./pages/user/UserKalender";
+import UserLogbook from "./pages/user/UserLogbook";
+import UserNilai from "./pages/user/UserNilai";
+import UserProfil from "./pages/user/UserProfil";
+import UserProyek from "./pages/user/UserProyek";
+import UserSertifikat from "./pages/user/UserSertifikat";
+import AdminProfil from "./pages/admin/AdminProfil";
+import PembimbingProfil from "./pages/pembimbing/PembimbingProfil";
 
 function App() {
   return (
@@ -48,6 +57,7 @@ function App() {
           <Route path="/AdminPembimbing" element={<AdminPembimbing />} />
           <Route path="/AdminSertifikat" element={<AdminSertifikat />} />
           <Route path="/AdminUser" element={<AdminUser />} />
+          <Route path="/AdminProfil" element={<AdminProfil />} />
         </Route>
 
         {/* Pembimbing */}
@@ -59,11 +69,19 @@ function App() {
           <Route path="/PembimbingProyek" element={<PembimbingProyek />} />
           <Route path="/PembimbingRiwayat" element={<PembimbingRiwayat />} />
           <Route path="/PembimbingUser" element={<PembimbingUser />} />
+          <Route path="/PembimbingProfil" element={<PembimbingProfil />} />
         </Route>
 
         {/* User */}
         <Route element={<UserLayout />}>
           <Route path="/UserBeranda" element={<UserBeranda />} />
+          <Route path="/UserAbsensi" element={<UserAbsensi />} />
+          <Route path="/UserKalender" element={<UserKalender />} />
+          <Route path="/UserLogbook" element={<UserLogbook />} />
+          <Route path="UserNilai" element={<UserNilai />} />
+          <Route path="UserProfil" element={<UserProfil />} />
+          <Route path="UserProyek" element={<UserProyek />} />
+          <Route path="UserSertifikat" element={<UserSertifikat />} />
         </Route>
 
       </Routes>

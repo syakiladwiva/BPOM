@@ -5,21 +5,29 @@ import {
   Clock,
   Folder,
   Calendar,
-  FileText,
   BarChart2,
+  User,
 } from "lucide-react";
+import { NavLink, useLocation } from "react-router-dom";
 
 export default function PembimbingSidebar() {
   const [open, setOpen] = useState(false);
-  const currentPath = window.location.pathname; // path aktif
+  const location = useLocation();
+
+  // Tutup sidebar otomatis setelah pilih menu (khusus mobile)
+  const handleClose = () => {
+    if (window.innerWidth < 640) {
+      setOpen(false);
+    }
+  };
 
   return (
     <div className="flex">
-      {/* Toggle Button */}
+      {/* Toggle Button (Mobile) */}
       <button
         onClick={() => setOpen(!open)}
         type="button"
-        className="inline-flex items-center p-2 mt-2 ms-3 text-sm text-gray-500 rounded-lg sm:hidden 
+        className="fixed top-3 left-3 z-50 inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden 
         hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200"
       >
         <span className="sr-only">Open sidebar</span>
@@ -54,95 +62,116 @@ export default function PembimbingSidebar() {
           {/* Menu List */}
           <ul className="space-y-2 text-sm font-medium">
             <li>
-              <a
-                href="/PembimbingBeranda"
+              <NavLink
+                to="/PembimbingBeranda"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingBeranda"
+                  location.pathname === "/PembimbingBeranda"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Home className="w-5 h-5 mr-3" />
                 Beranda
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingUser"
+              <NavLink
+                to="/PembimbingUser"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingUser"
+                  location.pathname === "/PembimbingUser"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Users className="w-5 h-5 mr-3" />
                 Data User Bimbingan
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingRiwayat"
+              <NavLink
+                to="/PembimbingRiwayat"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingRiwayat"
+                  location.pathname === "/PembimbingRiwayat"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Clock className="w-5 h-5 mr-3" />
                 Riwayat Bimbingan
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingProyek"
+              <NavLink
+                to="/PembimbingProyek"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingProyek"
+                  location.pathname === "/PembimbingProyek"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Folder className="w-5 h-5 mr-3" />
                 Proyek
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingAbsensi"
+              <NavLink
+                to="/PembimbingAbsensi"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingAbsensi"
+                  location.pathname === "/PembimbingAbsensi"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Calendar className="w-5 h-5 mr-3" />
                 Absensi
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingNilai"
+              <NavLink
+                to="/PembimbingNilai"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingNilai"
+                  location.pathname === "/PembimbingNilai"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <BarChart2 className="w-5 h-5 mr-3" />
                 Nilai
-              </a>
+              </NavLink>
             </li>
             <li>
-              <a
-                href="/PembimbingKalender"
+              <NavLink
+                to="/PembimbingKalender"
+                onClick={handleClose}
                 className={`flex items-center p-2 rounded-lg ${
-                  currentPath === "/PembimbingKalender"
+                  location.pathname === "/PembimbingKalender"
                     ? "bg-blue-700"
                     : "hover:bg-blue-700"
                 }`}
               >
                 <Calendar className="w-5 h-5 mr-3" />
                 Kalender
-              </a>
+              </NavLink>
+            </li>
+            <li>
+              <NavLink
+                to="/PembimbingProfil"
+                onClick={handleClose}
+                className={`flex items-center p-2 rounded-lg ${
+                  location.pathname === "/PembimbingProfil"
+                    ? "bg-blue-700"
+                    : "hover:bg-blue-700"
+                }`}
+              >
+                <User className="w-5 h-5 mr-3" />
+                Profil
+              </NavLink>
             </li>
           </ul>
         </div>

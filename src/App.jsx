@@ -1,7 +1,6 @@
 import GuestBeranda from "./pages/guest/GuestBeranda";
 import GuestDaftar from "./pages/guest/GuestDaftar";
 import GuestCekStatus from "./pages/guest/GuestCekStatus";
-import GuestDownload from "./pages/guest/GuestDownload";
 import AdminBeranda from "./pages/admin/AdminBeranda";
 import GuestLayout from "./components/GuestLayout";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -33,6 +32,9 @@ import UserProyek from "./pages/user/UserProyek";
 import UserSertifikat from "./pages/user/UserSertifikat";
 import AdminProfil from "./pages/admin/AdminProfil";
 import PembimbingProfil from "./pages/pembimbing/PembimbingProfil";
+import PembimbingProtes from "./pages/pembimbing/PembimbingProtes";
+import PembimbingRiwayatNilai from "./pages/pembimbing/PembimbingRiwayatNilai";
+import AdminPimpinan from "./pages/admin/AdminPimpinan";
 
 function App() {
   return (
@@ -45,7 +47,6 @@ function App() {
           <Route path="/" element={<GuestBeranda />} />
           <Route path="/Daftar" element={<GuestDaftar />} />
           <Route path="/Status" element={<GuestCekStatus />} />
-          <Route path="/Download" element={<GuestDownload />} />
         </Route>
 
         {/* Admin */}
@@ -58,6 +59,7 @@ function App() {
           <Route path="/AdminSertifikat" element={<AdminSertifikat />} />
           <Route path="/AdminUser" element={<AdminUser />} />
           <Route path="/AdminProfil" element={<AdminProfil />} />
+          <Route path="/AdminPimpinan" element={<AdminPimpinan />} />
         </Route>
 
         {/* Pembimbing */}
@@ -70,6 +72,8 @@ function App() {
           <Route path="/PembimbingRiwayat" element={<PembimbingRiwayat />} />
           <Route path="/PembimbingUser" element={<PembimbingUser />} />
           <Route path="/PembimbingProfil" element={<PembimbingProfil />} />
+          <Route path="/PembimbingProtes" element={<PembimbingProtes />} />
+          <Route path="/PembimbingRiwayatNilai" element={<PembimbingRiwayatNilai />} />
         </Route>
 
         {/* User */}

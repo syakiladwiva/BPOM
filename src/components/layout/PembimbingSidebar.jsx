@@ -1,3 +1,4 @@
+// src/components/PembimbingSidebar.jsx
 import { useState } from "react";
 import {
   Home,
@@ -7,11 +8,14 @@ import {
   Calendar,
   BarChart2,
   User,
+  ChevronDown,
+  ChevronRight,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
 export default function PembimbingSidebar() {
   const [open, setOpen] = useState(false);
+  const [openNilai, setOpenNilai] = useState(false); // untuk dropdown nilai
   const location = useLocation();
 
   // Tutup sidebar otomatis setelah pilih menu (khusus mobile)
@@ -131,20 +135,68 @@ export default function PembimbingSidebar() {
                 Absensi
               </NavLink>
             </li>
+
+            {/* Dropdown Nilai */}
             <li>
-              <NavLink
-                to="/PembimbingNilai"
-                onClick={handleClose}
-                className={`flex items-center p-2 rounded-lg ${
-                  location.pathname === "/PembimbingNilai"
-                    ? "bg-blue-700"
-                    : "hover:bg-blue-700"
-                }`}
+              <button
+                onClick={() => setOpenNilai(!openNilai)}
+                className="flex items-center justify-between w-full p-2 rounded-lg hover:bg-blue-700"
               >
-                <BarChart2 className="w-5 h-5 mr-3" />
-                Nilai
-              </NavLink>
+                <div className="flex items-center">
+                  <BarChart2 className="w-5 h-5 mr-3" />
+                  Nilai
+                </div>
+                {openNilai ? (
+                  <ChevronDown className="w-4 h-4" />
+                ) : (
+                  <ChevronRight className="w-4 h-4" />
+                )}
+              </button>
+              {openNilai && (
+                <ul className="ml-8 mt-2 space-y-1 text-sm">
+                  <li>
+                    <NavLink
+                      to="/PembimbingNilai"
+                      onClick={handleClose}
+                      className={`block p-2 rounded-lg ${
+                        location.pathname === "/PembimbingNilai"
+                          ? "bg-blue-700"
+                          : "hover:bg-blue-700"
+                      }`}
+                    >
+                      Penilaian
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/PembimbingProtes"
+                      onClick={handleClose}
+                      className={`block p-2 rounded-lg ${
+                        location.pathname === "/PembimbingProtes"
+                          ? "bg-blue-700"
+                          : "hover:bg-blue-700"
+                      }`}
+                    >
+                      Komplain User
+                    </NavLink>
+                  </li>
+                  <li>
+                    <NavLink
+                      to="/PembimbingRiwayatNilai"
+                      onClick={handleClose}
+                      className={`block p-2 rounded-lg ${
+                        location.pathname === "/PembimbingRiwayatNilai"
+                          ? "bg-blue-700"
+                          : "hover:bg-blue-700"
+                      }`}
+                    >
+                      Riwayat Penilaian
+                    </NavLink>
+                  </li>
+                </ul>
+              )}
             </li>
+
             <li>
               <NavLink
                 to="/PembimbingKalender"

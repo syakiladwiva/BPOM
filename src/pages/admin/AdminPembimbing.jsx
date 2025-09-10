@@ -28,12 +28,25 @@ const dummyUsers = [
   "Rudi Hartono",
 ];
 
+// Data dummy untuk divisi
+const dummyDivisi = [
+  { id: 1, nama: "IT Support" },
+  { id: 2, nama: "Finance" },
+  { id: 3, nama: "Marketing" },
+  { id: 4, nama: "HR" },
+  { id: 5, nama: "Operations" },
+];
+
 export default function AdminPembimbing() {
+  const [activeTab, setActiveTab] = useState("pembimbing");
   const [pembimbing, setPembimbing] = useState(dummyPembimbing);
+  const [divisi, setDivisi] = useState(dummyDivisi);
   const [selectedPembimbing, setSelectedPembimbing] = useState(null);
+  const [selectedDivisi, setSelectedDivisi] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isAddOpen, setIsAddOpen] = useState(false);
+  const [isAddDivisiOpen, setIsAddDivisiOpen] = useState(false);
 
   const openDetail = (data) => {
     setSelectedPembimbing(data);
@@ -59,6 +72,10 @@ export default function AdminPembimbing() {
     ]);
   };
 
+  const addDivisi = (newDivisi) => {
+    setDivisi((prev) => [...prev, { ...newDivisi, id: prev.length + 1 }]);
+  };
+
   const removeUser = (user) => {
     setSelectedPembimbing((prev) => ({
       ...prev,
@@ -71,7 +88,7 @@ export default function AdminPembimbing() {
       {/* Header */}
       <div className="flex justify-between items-center border-b pb-4 mb-6">
         <h1 className="text-xl sm:text-2xl font-semibold text-blue-900">
-          Daftar Pembimbing
+          {activeTab === "pembimbing" ? "Daftar Pembimbing" : "Daftar Divisi"}
         </h1>
         <div className="flex items-center gap-2 text-blue-900">
           <UserCircle className="w-6 h-6" />
@@ -79,97 +96,175 @@ export default function AdminPembimbing() {
         </div>
       </div>
 
-      <div className="mb-4">
+      {/* Tab Menu */}
+      <div className="flex space-x-4 mb-6">
         <button
-          onClick={() => setIsAddOpen(true)}
-          className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+          onClick={() => setActiveTab("pembimbing")}
+          className={`px-4 py-2 rounded text-sm sm:text-base ${
+            activeTab === "pembimbing"
+              ? "bg-blue-900 text-white"
+              : "bg-blue-100 text-blue-900 hover:bg-blue-200"
+          }`}
         >
-          + Tambah Pembimbing
+          Pembimbing
+        </button>
+        <button
+          onClick={() => setActiveTab("divisi")}
+          className={`px-4 py-2 rounded text-sm sm:text-base ${
+            activeTab === "divisi"
+              ? "bg-blue-900 text-white"
+              : "bg-blue-100 text-blue-900 hover:bg-blue-200"
+          }`}
+        >
+          Divisi
         </button>
       </div>
 
-      {/* Table (Desktop) */}
-      <div className="hidden md:block overflow-x-auto">
-        <table className="w-full border border-gray-200 text-sm">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="p-2 border">Nama</th>
-              <th className="p-2 border">Divisi</th>
-              <th className="p-2 border">Jumlah User</th>
-              <th className="p-2 border">No HP</th>
-              <th className="p-2 border">Email</th>
-              <th className="p-2 border">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
+      {activeTab === "pembimbing" ? (
+        <>
+          {/* Button Tambah Pembimbing */}
+          <div className="mb-4">
+            <button
+              onClick={() => setIsAddOpen(true)}
+              className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+            >
+              + Tambah Pembimbing
+            </button>
+          </div>
+
+          {/* Table Pembimbing (Desktop) */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full border border-gray-200 text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 border">Nama</th>
+                  <th className="p-2 border">Divisi</th>
+                  <th className="p-2 border">Jumlah User</th>
+                  <th className="p-2 border">No HP</th>
+                  <th className="p-2 border">Email</th>
+                  <th className="p-2 border">Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pembimbing.map((p) => (
+                  <tr key={p.id} className="text-center">
+                    <td className="p-2 border">{p.nama}</td>
+                    <td className="p-2 border">{p.divisi}</td>
+                    <td className="p-2 border">{p.users.length}</td>
+                    <td className="p-2 border">{p.nohp}</td>
+                    <td className="p-2 border">{p.email}</td>
+                    <td className="p-2 border space-x-2">
+                      <button
+                        onClick={() => openDetail(p)}
+                        className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+                      >
+                        Detail
+                      </button>
+                      <button
+                        onClick={() => openEdit(p)}
+                        className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+                      >
+                        Edit / Assign
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card List Pembimbing (Mobile) */}
+          <div className="grid gap-4 md:hidden">
             {pembimbing.map((p) => (
-              <tr key={p.id} className="text-center">
-                <td className="p-2 border">{p.nama}</td>
-                <td className="p-2 border">{p.divisi}</td>
-                <td className="p-2 border">{p.users.length}</td>
-                <td className="p-2 border">{p.nohp}</td>
-                <td className="p-2 border">{p.email}</td>
-                <td className="p-2 border space-x-2">
+              <div
+                key={p.id}
+                className="bg-white rounded-lg shadow p-4 border text-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="font-semibold text-blue-900">{p.nama}</h2>
+                  <span className="text-xs px-2 py-1 rounded bg-gray-200">
+                    {p.divisi}
+                  </span>
+                </div>
+                <p>
+                  <b>No HP:</b> {p.nohp}
+                </p>
+                <p>
+                  <b>Email:</b> {p.email}
+                </p>
+                <p>
+                  <b>User Dibimbing:</b> {p.users.length}
+                </p>
+                <div className="flex gap-2 mt-3">
                   <button
                     onClick={() => openDetail(p)}
-                    className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+                    className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
                   >
                     Detail
                   </button>
                   <button
                     onClick={() => openEdit(p)}
-                    className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
+                    className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
                   >
-                    Edit / Assign
+                    Edit
                   </button>
-                </td>
-              </tr>
+                </div>
+              </div>
             ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Card List (Mobile) */}
-      <div className="grid gap-4 md:hidden">
-        {pembimbing.map((p) => (
-          <div
-            key={p.id}
-            className="bg-white rounded-lg shadow p-4 border text-sm"
-          >
-            <div className="flex justify-between items-center mb-2">
-              <h2 className="font-semibold text-blue-900">{p.nama}</h2>
-              <span className="text-xs px-2 py-1 rounded bg-gray-200">
-                {p.divisi}
-              </span>
-            </div>
-            <p>
-              <b>No HP:</b> {p.nohp}
-            </p>
-            <p>
-              <b>Email:</b> {p.email}
-            </p>
-            <p>
-              <b>User Dibimbing:</b> {p.users.length}
-            </p>
-            <div className="flex gap-2 mt-3">
-              <button
-                onClick={() => openDetail(p)}
-                className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
-              >
-                Detail
-              </button>
-              <button
-                onClick={() => openEdit(p)}
-                className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
-              >
-                Edit
-              </button>
-            </div>
           </div>
-        ))}
-      </div>
+        </>
+      ) : (
+        <>
+          {/* Button Tambah Divisi */}
+          <div className="mb-4">
+            <button
+              onClick={() => setIsAddDivisiOpen(true)}
+              className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+            >
+              + Tambah Divisi
+            </button>
+          </div>
 
-      {/* Modal Detail */}
+          {/* Table Divisi (Desktop) */}
+          <div className="hidden md:block overflow-x-auto">
+            <table className="w-full border border-gray-200 text-sm">
+              <thead className="bg-gray-100">
+                <tr>
+                  <th className="p-2 border">No</th>
+                  <th className="p-2 border">Nama Divisi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {divisi.map((d, index) => (
+                  <tr key={d.id} className="text-center">
+                    <td className="p-2 border">{index + 1}</td>
+                    <td className="p-2 border">{d.nama}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Card List Divisi (Mobile) */}
+          <div className="grid gap-4 md:hidden">
+            {divisi.map((d, index) => (
+              <div
+                key={d.id}
+                className="bg-white rounded-lg shadow p-4 border text-sm"
+              >
+                <div className="flex justify-between items-center mb-2">
+                  <h2 className="font-semibold text-blue-900">{d.nama}</h2>
+                  <span className="text-xs px-2 py-1 rounded bg-gray-200">
+                    No: {index + 1}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {/* Modal Detail Pembimbing */}
       {isDetailOpen && selectedPembimbing && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-lg mx-2 sm:mx-0 max-h-[90vh] overflow-y-auto">
@@ -208,7 +303,7 @@ export default function AdminPembimbing() {
         </div>
       )}
 
-      {/* Modal Edit */}
+      {/* Modal Edit Pembimbing */}
       {isEditOpen && selectedPembimbing && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-2 sm:mx-0">
@@ -232,8 +327,7 @@ export default function AdminPembimbing() {
               </div>
               <div>
                 <label className="block font-medium">Divisi</label>
-                <input
-                  type="text"
+                <select
                   value={selectedPembimbing.divisi}
                   onChange={(e) =>
                     setSelectedPembimbing({
@@ -242,7 +336,14 @@ export default function AdminPembimbing() {
                     })
                   }
                   className="w-full p-2 border rounded"
-                />
+                >
+                  <option value="">-- Pilih Divisi --</option>
+                  {divisi.map((d) => (
+                    <option key={d.id} value={d.nama}>
+                      {d.nama}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block font-medium">No HP</label>
@@ -332,7 +433,7 @@ export default function AdminPembimbing() {
         </div>
       )}
 
-      {/* Modal Tambah */}
+      {/* Modal Tambah Pembimbing */}
       {isAddOpen && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
           <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-2 sm:mx-0">
@@ -340,6 +441,7 @@ export default function AdminPembimbing() {
               Tambah Pembimbing
             </h2>
             <TambahPembimbingForm
+              divisi={divisi}
               onSave={(data) => {
                 addPembimbing(data);
                 setIsAddOpen(false);
@@ -349,12 +451,30 @@ export default function AdminPembimbing() {
           </div>
         </div>
       )}
+
+      {/* Modal Tambah Divisi */}
+      {isAddDivisiOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-2 sm:mx-0">
+            <h2 className="text-xl font-semibold mb-4 text-blue-900">
+              Tambah Divisi
+            </h2>
+            <TambahDivisiForm
+              onSave={(data) => {
+                addDivisi(data);
+                setIsAddDivisiOpen(false);
+              }}
+              onCancel={() => setIsAddDivisiOpen(false)}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
 // Form Tambah Pembimbing
-function TambahPembimbingForm({ onSave, onCancel }) {
+function TambahPembimbingForm({ divisi, onSave, onCancel }) {
   const [form, setForm] = useState({
     nama: "",
     divisi: "",
@@ -375,12 +495,18 @@ function TambahPembimbingForm({ onSave, onCancel }) {
       </div>
       <div>
         <label className="block font-medium">Divisi</label>
-        <input
-          type="text"
+        <select
           value={form.divisi}
           onChange={(e) => setForm({ ...form, divisi: e.target.value })}
           className="w-full p-2 border rounded"
-        />
+        >
+          <option value="">-- Pilih Divisi --</option>
+          {divisi.map((d) => (
+            <option key={d.id} value={d.nama}>
+              {d.nama}
+            </option>
+          ))}
+        </select>
       </div>
       <div>
         <label className="block font-medium">No HP</label>
@@ -398,6 +524,42 @@ function TambahPembimbingForm({ onSave, onCancel }) {
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           className="w-full p-2 border rounded"
+        />
+      </div>
+      <div className="mt-4 text-right space-x-2">
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+        >
+          Batal
+        </button>
+        <button
+          onClick={() => onSave(form)}
+          className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+        >
+          Simpan
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// Form Tambah Divisi
+function TambahDivisiForm({ onSave, onCancel }) {
+  const [form, setForm] = useState({
+    nama: "",
+  });
+
+  return (
+    <div className="space-y-3">
+      <div>
+        <label className="block font-medium">Nama Divisi</label>
+        <input
+          type="text"
+          value={form.nama}
+          onChange={(e) => setForm({ ...form, nama: e.target.value })}
+          className="w-full p-2 border rounded"
+          placeholder="Masukkan nama divisi"
         />
       </div>
       <div className="mt-4 text-right space-x-2">

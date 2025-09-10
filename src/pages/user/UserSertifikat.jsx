@@ -54,7 +54,7 @@ const UserSertifikat = () => {
             {/* Rating */}
             <div>
               <label className="block mb-1 font-medium text-sm text-blue-900">
-                Rating Pembimbing
+                Rating Layanan E-Magang
               </label>
               <div className="flex gap-1">
                 {[1, 2, 3, 4, 5].map((star) => (
@@ -90,7 +90,7 @@ const UserSertifikat = () => {
             {/* Saran */}
             <div>
               <label className="block mb-1 font-medium text-sm text-blue-900">
-                Saran Perbaikan (opsional)
+                Masukan dan Saran (opsional)
               </label>
               <textarea
                 value={saran}

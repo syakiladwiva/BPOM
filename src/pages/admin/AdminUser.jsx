@@ -48,6 +48,15 @@ const dummyUsers = [
   },
 ];
 
+// Dummy pilihan dropdown
+const dummyDivisi = ["IT Support", "Finance", "HRD", "Marketing"];
+const dummyPembimbing = [
+  "Budi Santoso",
+  "Rina Marlina",
+  "Ahmad Fauzi",
+  "Dewi Kurnia",
+];
+
 export default function AdminUser() {
   const [users, setUsers] = useState(dummyUsers);
   const [selectedUser, setSelectedUser] = useState(null);
@@ -209,7 +218,6 @@ export default function AdminUser() {
             </h2>
             <div className="space-y-2 text-sm">
               {Object.entries(selectedUser.detail).map(([key, value]) => {
-                // Sembunyikan kontak dan progres
                 if (key === "kontak" || key === "progres") return null;
                 return (
                   <p key={key}>
@@ -240,19 +248,23 @@ export default function AdminUser() {
             <div className="space-y-3 text-sm">
               <div>
                 <label className="block font-medium">Divisi</label>
-                <input
-                  type="text"
+                <select
                   value={selectedUser.divisi}
                   onChange={(e) =>
                     setSelectedUser({ ...selectedUser, divisi: e.target.value })
                   }
                   className="w-full p-2 border rounded"
-                />
+                >
+                  {dummyDivisi.map((d, i) => (
+                    <option key={i} value={d}>
+                      {d}
+                    </option>
+                  ))}
+                </select>
               </div>
               <div>
                 <label className="block font-medium">Pembimbing</label>
-                <input
-                  type="text"
+                <select
                   value={selectedUser.pembimbing}
                   onChange={(e) =>
                     setSelectedUser({
@@ -261,7 +273,13 @@ export default function AdminUser() {
                     })
                   }
                   className="w-full p-2 border rounded"
-                />
+                >
+                  {dummyPembimbing.map((p, i) => (
+                    <option key={i} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="mt-4 text-right space-x-2">

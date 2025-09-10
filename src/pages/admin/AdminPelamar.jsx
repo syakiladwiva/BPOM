@@ -1,6 +1,7 @@
 // src/pages/AdminPelamar.jsx
 import { useState } from "react";
 import { UserCircle } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const dummyPelamar = [
   {
@@ -10,6 +11,7 @@ const dummyPelamar = [
     divisi: "IT",
     tanggalDaftar: "2025-09-01",
     status: "Belum Diproses",
+    pembimbing: "",
     detail: {
       nama: "Andi Saputra",
       nik: "1234567890",
@@ -33,6 +35,7 @@ const dummyPelamar = [
     divisi: "Keuangan",
     tanggalDaftar: "2025-09-02",
     status: "Sedang Diproses",
+    pembimbing: "",
     detail: {
       nama: "Budi Santoso",
       nik: "9876543210",
@@ -51,29 +54,51 @@ const dummyPelamar = [
   },
 ];
 
+const dummyPembimbing = ["Drs. Ahmad", "Ir. Dewi", "Bapak Joko", "Ibu Sari"];
+
 export default function AdminPelamar() {
   const [pelamar, setPelamar] = useState(dummyPelamar);
   const [selectedPelamar, setSelectedPelamar] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
-  const [isProsesOpen, setIsProsesOpen] = useState(false);
+  const [pembimbing, setPembimbing] = useState("");
+
+  const navigate = useNavigate();
 
   const openDetail = (data) => {
     setSelectedPelamar(data);
+    setPembimbing(data.pembimbing || "");
     setIsDetailOpen(true);
   };
 
-  const openProses = (data) => {
-    setSelectedPelamar(data);
-    setIsProsesOpen(true);
+  const updateStatus = (status) => {
+    setSelectedPelamar((prev) => ({ ...prev, status }));
   };
 
-  const updateStatus = (status) => {
+  const handleSave = () => {
+    // Validasi: kalau status diterima tapi belum pilih pembimbing
+    if (selectedPelamar.status === "Diterima" && !pembimbing) {
+      alert("⚠️ Harap pilih pembimbing terlebih dahulu!");
+      return;
+    }
+
+    // Update data pelamar
     setPelamar((prev) =>
       prev.map((p) =>
-        p.id === selectedPelamar.id ? { ...p, status: status } : p
+        p.id === selectedPelamar.id
+          ? { ...p, status: selectedPelamar.status, pembimbing }
+          : p
       )
     );
-    setIsProsesOpen(false);
+    setSelectedPelamar((prev) => ({ ...prev, pembimbing }));
+
+    alert("Perubahan berhasil disimpan ✅");
+
+    // Kalau diterima + pembimbing dipilih → redirect
+    if (selectedPelamar.status === "Diterima" && pembimbing) {
+      navigate("/AdminKelola");
+    } else {
+      setIsDetailOpen(false);
+    }
   };
 
   return (
@@ -110,18 +135,12 @@ export default function AdminPelamar() {
                 <td className="p-2 border">{p.divisi}</td>
                 <td className="p-2 border">{p.tanggalDaftar}</td>
                 <td className="p-2 border">{p.status}</td>
-                <td className="p-2 border space-x-2">
+                <td className="p-2 border">
                   <button
                     onClick={() => openDetail(p)}
                     className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
                   >
                     Detail
-                  </button>
-                  <button
-                    onClick={() => openProses(p)}
-                    className="px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
-                  >
-                    Proses
                   </button>
                 </td>
               </tr>
@@ -158,12 +177,6 @@ export default function AdminPelamar() {
                 className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
               >
                 Detail
-              </button>
-              <button
-                onClick={() => openProses(p)}
-                className="flex-1 px-3 py-1 bg-blue-900 text-white rounded hover:bg-blue-800"
-              >
-                Proses
               </button>
             </div>
           </div>
@@ -217,45 +230,63 @@ export default function AdminPelamar() {
               <p>
                 <b>Surat:</b> {selectedPelamar.detail.surat}
               </p>
+
+              {/* Status Selector */}
+              <div className="mt-3">
+                <label className="block font-medium mb-1">Status:</label>
+                <select
+                  value={selectedPelamar.status}
+                  onChange={(e) => updateStatus(e.target.value)}
+                  className="w-full p-2 border rounded"
+                >
+                  {[
+                    "Belum Diproses",
+                    "Sedang Diproses",
+                    "Diterima",
+                    "Ditolak",
+                  ].map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Assign Pembimbing (hanya muncul jika diterima) */}
+              {selectedPelamar.status === "Diterima" && (
+                <div className="mt-4 p-4 border rounded-lg bg-gray-50">
+                  <h3 className="font-semibold mb-2 text-blue-900">
+                    Assign Pembimbing
+                  </h3>
+                  <select
+                    value={pembimbing}
+                    onChange={(e) => setPembimbing(e.target.value)}
+                    className="w-full p-2 border rounded"
+                  >
+                    <option value="">-- Pilih Pembimbing --</option>
+                    {dummyPembimbing.map((nama) => (
+                      <option key={nama} value={nama}>
+                        {nama}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
-            <div className="mt-4 text-right">
+
+            {/* Tombol Tutup & Simpan */}
+            <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setIsDetailOpen(false)}
                 className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
               >
                 Tutup
               </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Proses */}
-      {isProsesOpen && selectedPelamar && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white p-6 rounded-lg w-full max-w-sm mx-2 sm:mx-0">
-            <h2 className="text-xl font-semibold mb-4 text-blue-900">
-              Proses Pelamar
-            </h2>
-            <div className="space-y-3">
-              {["Belum Diproses", "Sedang Diproses", "Diterima", "Ditolak"].map(
-                (status) => (
-                  <button
-                    key={status}
-                    onClick={() => updateStatus(status)}
-                    className="w-full px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
-                  >
-                    {status}
-                  </button>
-                )
-              )}
-            </div>
-            <div className="mt-4 text-right">
               <button
-                onClick={() => setIsProsesOpen(false)}
-                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
+                onClick={handleSave}
+                className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
               >
-                Batal
+                Simpan
               </button>
             </div>
           </div>

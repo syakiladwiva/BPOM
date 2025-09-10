@@ -7,6 +7,7 @@ import {
   BarChart2,
   Settings,
   UserCircle,
+  Briefcase, // 👉 icon untuk menu Pimpinan
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -114,7 +115,7 @@ export default function AdminSidebar() {
                 }`}
               >
                 <User className="w-5 h-5 mr-3" />
-                Pembimbing
+                Pembimbing dan Divisi
               </NavLink>
             </li>
             <li>
@@ -131,6 +132,23 @@ export default function AdminSidebar() {
                 Sertifikat
               </NavLink>
             </li>
+
+            {/* ✅ Menu baru Pimpinan */}
+            <li>
+              <NavLink
+                to="/AdminPimpinan"
+                onClick={handleClose}
+                className={`flex items-center p-2 rounded-lg ${
+                  location.pathname === "/AdminPimpinan"
+                    ? "bg-blue-700"
+                    : "hover:bg-blue-700"
+                }`}
+              >
+                <Briefcase className="w-5 h-5 mr-3" />
+                Pimpinan
+              </NavLink>
+            </li>
+
             <li>
               <NavLink
                 to="/AdminLaporan"

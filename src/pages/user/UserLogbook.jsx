@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { UserCircle, FileDown, NotebookPen } from "lucide-react";
 
-const UserLogbook = () => {
+const UserLogbook = ({ onSubmitLogbook }) => {
   const [logbook, setLogbook] = useState([]);
   const [form, setForm] = useState({
     tanggal: "",
@@ -22,7 +22,12 @@ const UserLogbook = () => {
     if (!form.tanggal || !form.aktivitas || !form.jamMulai || !form.jamSelesai)
       return alert("Isi semua field wajib!");
 
-    setLogbook([...logbook, form]);
+    const newLog = { ...form, statusAbsensi: "pending" };
+    setLogbook([...logbook, newLog]);
+
+    // kirim ke pembimbing (notifikasi absensi)
+    if (onSubmitLogbook) onSubmitLogbook(newLog);
+
     setForm({
       tanggal: "",
       aktivitas: "",
@@ -124,78 +129,33 @@ const UserLogbook = () => {
         {logbook.length === 0 ? (
           <p className="text-gray-500 text-sm">Belum ada logbook dicatat.</p>
         ) : (
-          <>
-            {/* Tabel untuk desktop */}
-            <div className="hidden md:block overflow-x-auto">
-              <table className="min-w-full border border-gray-300 text-sm">
-                <thead className="bg-gray-100 text-blue-900">
-                  <tr>
-                    <th className="border px-2 py-1">Tanggal</th>
-                    <th className="border px-2 py-1">Aktivitas</th>
-                    <th className="border px-2 py-1">Jam Mulai</th>
-                    <th className="border px-2 py-1">Jam Selesai</th>
-                    <th className="border px-2 py-1">Kendala</th>
-                    <th className="border px-2 py-1">Catatan</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {logbook.map((row, i) => (
-                    <tr key={i} className="text-center">
-                      <td className="border px-2 py-1">{row.tanggal}</td>
-                      <td className="border px-2 py-1">{row.aktivitas}</td>
-                      <td className="border px-2 py-1">{row.jamMulai}</td>
-                      <td className="border px-2 py-1">{row.jamSelesai}</td>
-                      <td className="border px-2 py-1">{row.kendala || "-"}</td>
-                      <td className="border px-2 py-1">{row.catatan || "-"}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Card untuk mobile */}
-            <div className="space-y-3 md:hidden">
-              {logbook.map((row, i) => (
-                <div
-                  key={i}
-                  className="border rounded-lg p-3 shadow-sm bg-gray-50"
-                >
-                  <p className="text-sm">
-                    <span className="font-semibold text-blue-900">
-                      Tanggal:
-                    </span>{" "}
-                    {row.tanggal}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-blue-900">
-                      Aktivitas:
-                    </span>{" "}
-                    {row.aktivitas}
-                  </p>
-                  <p className="text-sm">
-                    <span className="font-semibold text-blue-900">Jam:</span>{" "}
-                    {row.jamMulai} - {row.jamSelesai}
-                  </p>
-                  {row.kendala && (
-                    <p className="text-sm">
-                      <span className="font-semibold text-blue-900">
-                        Kendala:
-                      </span>{" "}
-                      {row.kendala}
-                    </p>
-                  )}
-                  {row.catatan && (
-                    <p className="text-sm">
-                      <span className="font-semibold text-blue-900">
-                        Catatan:
-                      </span>{" "}
-                      {row.catatan}
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </>
+          <div className="space-y-3">
+            {logbook.map((row, i) => (
+              <div
+                key={i}
+                className="border rounded-lg p-3 shadow-sm bg-gray-50"
+              >
+                <p className="text-sm">
+                  <span className="font-semibold text-blue-900">Tanggal:</span>{" "}
+                  {row.tanggal}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold text-blue-900">
+                    Aktivitas:
+                  </span>{" "}
+                  {row.aktivitas}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold text-blue-900">Jam:</span>{" "}
+                  {row.jamMulai} - {row.jamSelesai}
+                </p>
+                <p className="text-sm">
+                  <span className="font-semibold text-blue-900">Status:</span>{" "}
+                  {row.statusAbsensi}
+                </p>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>

@@ -36,8 +36,9 @@ export default function AdminKelola() {
     password: "",
     role: "User",
     divisi: "",
-    pembimbing: "",
   });
+
+  const [filterRole, setFilterRole] = useState("Semua");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -61,9 +62,14 @@ export default function AdminKelola() {
       password: "",
       role: "User",
       divisi: "",
-      pembimbing: "",
     });
   };
+
+  // Filter akun berdasarkan role
+  const filteredAccounts =
+    filterRole === "Semua"
+      ? accounts
+      : accounts.filter((acc) => acc.role === filterRole);
 
   return (
     <div className="p-4 sm:p-6 bg-gray-50 min-h-screen">
@@ -76,6 +82,21 @@ export default function AdminKelola() {
           <UserCircle className="w-6 h-6" />
           <span className="hidden sm:inline">Admin</span>
         </div>
+      </div>
+
+      {/* Filter Role */}
+      <div className="mb-4 flex items-center gap-2">
+        <label className="font-medium text-sm">Filter Role:</label>
+        <select
+          value={filterRole}
+          onChange={(e) => setFilterRole(e.target.value)}
+          className="border p-2 rounded"
+        >
+          <option value="Semua">Semua</option>
+          <option value="Admin">Admin</option>
+          <option value="Pembimbing">Pembimbing</option>
+          <option value="User">User</option>
+        </select>
       </div>
 
       {/* Daftar Akun */}
@@ -98,7 +119,7 @@ export default function AdminKelola() {
               </tr>
             </thead>
             <tbody>
-              {accounts.map((acc) => (
+              {filteredAccounts.map((acc) => (
                 <tr key={acc.id} className="text-center">
                   <td className="p-2 border">{acc.username}</td>
                   <td className="p-2 border">{acc.nama}</td>
@@ -126,11 +147,16 @@ export default function AdminKelola() {
               ))}
             </tbody>
           </table>
+          {filteredAccounts.length === 0 && (
+            <p className="text-center text-gray-500 mt-3 text-sm">
+              Tidak ada akun dengan role {filterRole}.
+            </p>
+          )}
         </div>
 
         {/* Card List (Mobile) */}
         <div className="grid gap-4 md:hidden">
-          {accounts.map((acc) => (
+          {filteredAccounts.map((acc) => (
             <div
               key={acc.id}
               className="bg-white rounded-lg shadow p-4 border text-sm"
@@ -169,6 +195,11 @@ export default function AdminKelola() {
               </div>
             </div>
           ))}
+          {filteredAccounts.length === 0 && (
+            <p className="text-center text-gray-500 mt-3 text-sm">
+              Tidak ada akun dengan role {filterRole}.
+            </p>
+          )}
         </div>
       </div>
 
@@ -220,26 +251,6 @@ export default function AdminKelola() {
             <option value="Pembimbing">Pembimbing</option>
             <option value="User">User</option>
           </select>
-          {form.role === "User" && (
-            <>
-              <input
-                type="text"
-                name="divisi"
-                placeholder="Divisi (Opsional)"
-                value={form.divisi}
-                onChange={handleChange}
-                className="border p-2 rounded"
-              />
-              <input
-                type="text"
-                name="pembimbing"
-                placeholder="Assign Pembimbing"
-                value={form.pembimbing}
-                onChange={handleChange}
-                className="border p-2 rounded"
-              />
-            </>
-          )}
         </div>
         <button
           onClick={handleAdd}

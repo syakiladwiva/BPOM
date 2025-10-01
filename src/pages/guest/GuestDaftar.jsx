@@ -1,6 +1,8 @@
+// src/pages/GuestDaftar.jsx
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import daftarImg from "../../assets/images/cewek_guest.png"; // sesuaikan path
+import guestService from "../../services/magangService"; // service api
 
 export default function GuestDaftar() {
   const [formData, setFormData] = useState({
@@ -20,6 +22,7 @@ export default function GuestDaftar() {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
@@ -32,19 +35,103 @@ export default function GuestDaftar() {
 
   const validate = () => {
     const newErrors = {};
-    Object.keys(formData).forEach((key) => {
-      if (!formData[key] || formData[key] === "") {
-        newErrors[key] = "Wajib diisi";
-      }
-    });
+    const {
+      nama,
+      nik,
+      nim,
+      hp,
+      universitas,
+      alamatUniv,
+      jurusan,
+      semester,
+      divisi,
+      mulai,
+      selesai,
+      proposal,
+      surat,
+    } = formData;
+
+    // Wajib diisi
+    if (!nama.trim()) newErrors.nama = "Wajib diisi";
+    if (!nik.trim()) newErrors.nik = "Wajib diisi";
+    if (!nim.trim()) newErrors.nim = "Wajib diisi";
+    if (!hp.trim()) newErrors.hp = "Wajib diisi";
+    if (!universitas.trim()) newErrors.universitas = "Wajib diisi";
+    if (!alamatUniv.trim()) newErrors.alamatUniv = "Wajib diisi";
+    if (!jurusan.trim()) newErrors.jurusan = "Wajib diisi";
+    if (!semester.trim()) newErrors.semester = "Wajib diisi";
+    if (!divisi.trim()) newErrors.divisi = "Wajib dipilih";
+    if (!mulai) newErrors.mulai = "Wajib diisi";
+    if (!selesai) newErrors.selesai = "Wajib diisi";
+    if (!proposal) newErrors.proposal = "Wajib diunggah";
+    if (!surat) newErrors.surat = "Wajib diunggah";
+
+    // Validasi NIK (16 digit angka)
+    if (nik && !/^\d{16}$/.test(nik.trim())) {
+      newErrors.nik = "NIK harus 16 digit angka";
+    }
+
+    // Validasi No HP (10–15 digit angka)
+    const hpDigits = hp.replace(/\D/g, "").trim();
+    if (hp && !/^\d{10,15}$/.test(hpDigits)) {
+      newErrors.hp = "Nomor HP harus 10–15 digit angka";
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return; // stop kalau ada error
-    console.log("Form Submitted:", formData);
+    if (!validate()) return;
+
+    try {
+      setLoading(true);
+
+      // 🔥 Mapping payload sesuai backend
+      const payload = new FormData();
+      payload.append("no_formulir", "FRM-" + Date.now());
+      payload.append("nama", formData.nama.trim());
+      payload.append("nik", formData.nik.trim());
+      payload.append("nim", formData.nim.trim());
+      payload.append("no_hp", formData.hp.replace(/\D/g, "").trim());
+      payload.append("universitas", formData.universitas.trim());
+      payload.append("alamat_universitas", formData.alamatUniv.trim());
+      payload.append("jurusan", formData.jurusan.trim());
+      payload.append("semester", formData.semester.trim());
+      payload.append("divisi_tujuan", formData.divisi.trim());
+      payload.append("waktu_mulai", formData.mulai);
+      payload.append("waktu_selesai", formData.selesai);
+      payload.append("status_pengajuan", "belum diproses");
+
+      if (formData.proposal) payload.append("proposal", formData.proposal);
+      if (formData.surat) payload.append("surat_permohonan", formData.surat);
+
+      await guestService.register(payload);
+
+      alert("Pendaftaran berhasil dikirim!");
+      setFormData({
+        nama: "",
+        nik: "",
+        nim: "",
+        hp: "",
+        universitas: "",
+        alamatUniv: "",
+        jurusan: "",
+        semester: "",
+        divisi: "",
+        mulai: "",
+        selesai: "",
+        proposal: null,
+        surat: null,
+      });
+      setErrors({});
+    } catch (error) {
+      console.error(error);
+      alert("Gagal mengirim data. Coba lagi!");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const Label = ({ children }) => (
@@ -226,7 +313,11 @@ export default function GuestDaftar() {
                 <Label>Unggah Proposal</Label>
                 <label className="flex items-center gap-2 border rounded-lg px-4 py-2 cursor-pointer bg-gray-50">
                   <Upload className="w-5 h-5 text-gray-500" />
-                  <span className="text-sm text-gray-600">Pilih file...</span>
+                  <span className="text-sm text-gray-600">
+                    {formData.proposal
+                      ? formData.proposal.name
+                      : "Pilih file..."}
+                  </span>
                   <input
                     type="file"
                     name="proposal"
@@ -240,7 +331,9 @@ export default function GuestDaftar() {
                 <Label>Unggah Surat Permohonan</Label>
                 <label className="flex items-center gap-2 border rounded-lg px-4 py-2 cursor-pointer bg-gray-50">
                   <Upload className="w-5 h-5 text-gray-500" />
-                  <span className="text-sm text-gray-600">Pilih file...</span>
+                  <span className="text-sm text-gray-600">
+                    {formData.surat ? formData.surat.name : "Pilih file..."}
+                  </span>
                   <input
                     type="file"
                     name="surat"
@@ -255,9 +348,10 @@ export default function GuestDaftar() {
             {/* Tombol */}
             <button
               type="submit"
-              className="w-full bg-blue-900 text-white font-semibold py-3 rounded-lg hover:bg-blue-800 transition"
+              disabled={loading}
+              className="w-full bg-blue-900 text-white font-semibold py-3 rounded-lg hover:bg-blue-800 transition disabled:opacity-50"
             >
-              Daftar Sekarang
+              {loading ? "Mengirim..." : "Daftar Sekarang"}
             </button>
           </form>
 

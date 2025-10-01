@@ -35,6 +35,7 @@ import PembimbingProfil from "./pages/pembimbing/PembimbingProfil";
 import PembimbingProtes from "./pages/pembimbing/PembimbingProtes";
 import PembimbingRiwayatNilai from "./pages/pembimbing/PembimbingRiwayatNilai";
 import AdminPimpinan from "./pages/admin/AdminPimpinan";
+import AdminKalender from "./pages/admin/AdminKalender"
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
           <Route path="/AdminUser" element={<AdminUser />} />
           <Route path="/AdminProfil" element={<AdminProfil />} />
           <Route path="/AdminPimpinan" element={<AdminPimpinan />} />
+          <Route path="/AdminKalender" element={<AdminKalender />} />
         </Route>
 
         {/* Pembimbing */}

@@ -7,7 +7,8 @@ import {
   BarChart2,
   Settings,
   UserCircle,
-  Briefcase, // 👉 icon untuk menu Pimpinan
+  Briefcase,
+  CalendarDays, // 👉 tambahkan icon kalender
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router-dom";
 
@@ -146,6 +147,22 @@ export default function AdminSidebar() {
               >
                 <Briefcase className="w-5 h-5 mr-3" />
                 Pimpinan
+              </NavLink>
+            </li>
+
+            {/* ✅ Menu baru Agenda */}
+            <li>
+              <NavLink
+                to="/AdminKalender"
+                onClick={handleClose}
+                className={`flex items-center p-2 rounded-lg ${
+                  location.pathname === "/AdminKalender"
+                    ? "bg-blue-700"
+                    : "hover:bg-blue-700"
+                }`}
+              >
+                <CalendarDays className="w-5 h-5 mr-3" />
+                Agenda
               </NavLink>
             </li>
 

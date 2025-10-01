@@ -1,68 +1,65 @@
 // src/pages/AdminPelamar.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UserCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
-const dummyPelamar = [
-  {
-    id: 1,
-    noFormulir: "F001",
-    nama: "Andi Saputra",
-    divisi: "IT",
-    tanggalDaftar: "2025-09-01",
-    status: "Belum Diproses",
-    pembimbing: "",
-    detail: {
-      nama: "Andi Saputra",
-      nik: "1234567890",
-      nim: "2022610040",
-      noHp: "08123456789",
-      universitas: "Universitas Andalas",
-      alamatUniv: "Padang, Sumbar",
-      jurusan: "Informatika",
-      semester: "7",
-      divisiTujuan: "IT",
-      waktuMulai: "2025-09-10",
-      waktuSelesai: "2025-12-10",
-      proposal: "proposal.pdf",
-      surat: "surat_permohonan.pdf",
-    },
-  },
-  {
-    id: 2,
-    noFormulir: "F002",
-    nama: "Budi Santoso",
-    divisi: "Keuangan",
-    tanggalDaftar: "2025-09-02",
-    status: "Sedang Diproses",
-    pembimbing: "",
-    detail: {
-      nama: "Budi Santoso",
-      nik: "9876543210",
-      nim: "2022610041",
-      noHp: "081298765432",
-      universitas: "Politeknik Negeri Padang",
-      alamatUniv: "Padang, Sumbar",
-      jurusan: "Akuntansi",
-      semester: "5",
-      divisiTujuan: "Keuangan",
-      waktuMulai: "2025-09-15",
-      waktuSelesai: "2025-12-15",
-      proposal: "proposal_budi.pdf",
-      surat: "surat_budi.pdf",
-    },
-  },
-];
+import axios from "axios";
 
 const dummyPembimbing = ["Drs. Ahmad", "Ir. Dewi", "Bapak Joko", "Ibu Sari"];
 
 export default function AdminPelamar() {
-  const [pelamar, setPelamar] = useState(dummyPelamar);
+  const [pelamar, setPelamar] = useState([]);
   const [selectedPelamar, setSelectedPelamar] = useState(null);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [pembimbing, setPembimbing] = useState("");
 
   const navigate = useNavigate();
+
+  // Buat instance axios dengan token
+  const api = axios.create({
+    baseURL: "http://localhost:8000/api",
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem("token")}`,
+    },
+  });
+
+  // 🚀 Ambil data dari backend
+  useEffect(() => {
+    const fetchPelamar = async () => {
+      try {
+        const res = await api.get("/detail-pelamar");
+        const mapped = res.data.map((d) => ({
+          id: d.id,
+          noFormulir: d.magang?.no_formulir || "-",
+          nama: d.nama,
+          divisi: d.divisi_tujuan,
+          tanggalDaftar: d.created_at
+            ? new Date(d.created_at).toISOString().slice(0, 10)
+            : "-",
+          status: d.status || "Belum Diproses",
+          pembimbing: d.pembimbing || "",
+          detail: {
+            nama: d.nama,
+            nik: d.nik,
+            nim: d.nim,
+            noHp: d.no_hp,
+            universitas: d.universitas,
+            alamatUniv: d.alamat_univ,
+            jurusan: d.jurusan,
+            semester: d.semester,
+            divisiTujuan: d.divisi_tujuan,
+            waktuMulai: d.waktu_mulai,
+            waktuSelesai: d.waktu_selesai,
+            proposal: d.proposal,
+            surat: d.surat,
+          },
+        }));
+        setPelamar(mapped);
+      } catch (err) {
+        console.error("Gagal fetch pelamar:", err);
+      }
+    };
+    fetchPelamar();
+  }, []);
 
   const openDetail = (data) => {
     setSelectedPelamar(data);
@@ -74,30 +71,39 @@ export default function AdminPelamar() {
     setSelectedPelamar((prev) => ({ ...prev, status }));
   };
 
-  const handleSave = () => {
-    // Validasi: kalau status diterima tapi belum pilih pembimbing
+  const handleSave = async () => {
     if (selectedPelamar.status === "Diterima" && !pembimbing) {
       alert("⚠️ Harap pilih pembimbing terlebih dahulu!");
       return;
     }
 
-    // Update data pelamar
-    setPelamar((prev) =>
-      prev.map((p) =>
-        p.id === selectedPelamar.id
-          ? { ...p, status: selectedPelamar.status, pembimbing }
-          : p
-      )
-    );
-    setSelectedPelamar((prev) => ({ ...prev, pembimbing }));
+    try {
+      // 🚀 Update status ke backend
+      await api.put(`/detail-pelamar/${selectedPelamar.id}`, {
+        status_pengajuan: selectedPelamar.status,
+        pembimbing: pembimbing,
+      });
 
-    alert("Perubahan berhasil disimpan ✅");
+      // Update data di state frontend
+      setPelamar((prev) =>
+        prev.map((p) =>
+          p.id === selectedPelamar.id
+            ? { ...p, status: selectedPelamar.status, pembimbing }
+            : p
+        )
+      );
+      setSelectedPelamar((prev) => ({ ...prev, pembimbing }));
 
-    // Kalau diterima + pembimbing dipilih → redirect
-    if (selectedPelamar.status === "Diterima" && pembimbing) {
-      navigate("/AdminKelola");
-    } else {
-      setIsDetailOpen(false);
+      alert("Perubahan berhasil disimpan ✅");
+
+      if (selectedPelamar.status === "Diterima" && pembimbing) {
+        navigate("/AdminKelola");
+      } else {
+        setIsDetailOpen(false);
+      }
+    } catch (err) {
+      console.error("Gagal update status:", err);
+      alert("❌ Gagal update status");
     }
   };
 
@@ -252,7 +258,7 @@ export default function AdminPelamar() {
                 </select>
               </div>
 
-              {/* Assign Pembimbing (hanya muncul jika diterima) */}
+              {/* Assign Pembimbing */}
               {selectedPelamar.status === "Diterima" && (
                 <div className="mt-4 p-4 border rounded-lg bg-gray-50">
                   <h3 className="font-semibold mb-2 text-blue-900">
@@ -274,11 +280,11 @@ export default function AdminPelamar() {
               )}
             </div>
 
-            {/* Tombol Tutup & Simpan */}
+            {/* Tombol */}
             <div className="mt-4 flex justify-end gap-2">
               <button
                 onClick={() => setIsDetailOpen(false)}
-                className="px-4 py-2 bg-blue-900 text-white rounded hover:bg-blue-800"
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400"
               >
                 Tutup
               </button>
